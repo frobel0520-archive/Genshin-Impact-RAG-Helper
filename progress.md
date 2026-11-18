@@ -1,36 +1,26 @@
-# 專案進度（2026-10-29）
+# 專案進度（2026-11-18）
 
-## 本輪已完成
+> **本專案已停止開發並封存（Archived）。** repo 保留為唯讀，供日後參考；以下待辦不再處理。
 
-- `main` 已先與 `origin/main` 同步；固定來源重新抓取並重建出 14 文件、89 切塊，與 74 題題庫同為 `dataset_version f49336564cad6162`。
-- Node 24 本輪完整離線檢查通過（463 tests，包含語法／模組邊界）；這不是目標 Ollama 模型驗收。先前本機索引建置已通過。
-- 正式查詢預設略過只供記錄、額外耗時的 evidence coverage 模型呼叫；`ENFORCE_COVERAGE=true` 仍可供實驗。
-- 評估命令預設連跑三次，列出模板回答數的範圍、答案文字變動的題目、逐題端到端時間與 10 秒門檻結果。`GENERATION_MODEL` 可指定待比較的模型。
-- SA／SD 已補上 10 秒效能門檻；既有 44–111 秒量測代表目前**未通過**。
-- 本輪補上延遲 Gate 的無效數值／門檻拒絕，防止 NaN、Infinity、缺值或負數冒充通過；生成降級日誌改為固定訊息與已知分類，排除 adapter 原始錯誤及 grounding 詞句。見 [docs/11](docs/11-latency-and-fallback-log-validation.md)。模型、答案長度、timeout 與串流契約不變；全系統 log 保存／遮罩決議及目標裝置實測仍待完成。
+## 封存原因
 
-## 待辦
+原訂的 local-first 小模型 10 秒延遲門檻（[#94](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/94)）、生成決定性（[#92](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/92)）與長證據生成品質（[#87](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/87)）經評估後決定不再投入調整，改為保留既有成果供日後參考。三個 issue 以「因專案封存而關閉」結案，不代表已解決。
 
-- [ ] 【中】待外部：[#87](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/87) 在目標 Ollama 裝置驗證長證據生成品質與74題回歸。
-- [ ] 【中】待外部：[#92](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/92) 同設定連跑三次，核對答案／模板數／指標的可重現性。
-- [ ] 【中】待外部：[#94](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/94) 驗證每題完整回應10秒門檻，或先明確決定串流驗收與日誌遮罩規則。
+## 已完成成果
 
-## 目標裝置的驗證方式
+- 固定來源抓取與索引：HoYoLAB、Fandom、genshin-db 以 pinned 指標重建，14 文件、89 切塊，`dataset_version f49336564cad6162` 可重現。
+- Grounding 守門：證據不足即拒答；未出現在證據的名稱、與證據矛盾的元素會退回附引用的模板。
+- 74 題評估基準（64 可答、10 必拒）：Recall@5、正確拒答率、引用率皆 100%；答案正確性與 groundedness 為 `not_scored`。
+- 離線單元測試：2026-11-18 在 `main` 以 Node 24 執行 `npm test`，463 tests 全數通過；這不是目標模型驗收。
 
-使用者指定在另一台裝置做 Ollama 實測；2026-09-29 已從這台 Mac 刪除 Ollama App、本機模型、設定與快取。`/usr/local/bin/ollama` 是 root 擁有的失效連結，仍須由具管理員密碼的使用者執行 `sudo rm /usr/local/bin/ollama` 才能清除。這台 Mac 曾以 `qwen2.5:7b-instruct` 嘗試 5.5 長篇總覽，180 秒逾時，沒有可用答案；這不是原 RTX 3060 基線的驗收結果。
+## 封存時未達成的驗收
 
-| GitHub issue | 現況 | 關閉前需要的證據 |
-|---|---|---|
-| [#87](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/87) 長證據生成品質 | 尚未解決 | 「5.5版本更新了哪些內容？」有以主線開頭、無編造的散文；74 題三項機器指標與狀態分佈不退步，並完成必要人工複核。 |
-| [#92](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/92) 可重現性 | 報告工具已改，未實測 | 同設定連跑三次，核對 `answer_text`、模板數範圍、狀態與指標；若仍有變動，記錄條件與幅度。 |
-| [#94](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/94) 10 秒效能 | 門檻與測量已寫入，未達標 | 74 題每題完整回應 ≤10 秒，或先決定長篇總覽的串流驗收方式，再重跑新模型的 release gate。OPEN-05 另含日誌保存與遮罩規則，仍待決議。 |
+| Issue | 封存時狀態 |
+|---|---|
+| [#87](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/87) 長證據生成品質 | 守門擋住編造，但長篇版本總覽常退回模板；未在目標裝置驗證。 |
+| [#92](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/92) 生成決定性 | 評估工具已能連跑三次比對，未實測；先前量測版本總覽散文仍會變動。 |
+| [#94](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/94) 10 秒效能門檻 | 實測 44–111 秒，**未通過**；串流驗收與日誌遮罩規則未決議。 |
 
-在目標裝置安裝所需模型、依 `README.md` 重建來源與索引後，可執行：
+## 若日後重啟
 
-```powershell
-$env:GENERATION_MODEL = "qwen2.5:7b-instruct" # 候選模型；先保留原 14B 基線作對照
-npm run evaluate -- evaluation\eval-cases.json --report artifacts\eval-report.json
-```
-
-報告須保留每次 run 的結果與延遲；目前三個 issue 維持 open，不把離線單元測試當成模型驗收。
-
+先讀 `README.md` 重建來源與索引，再從上表三項擇一重新評估；需改用其他模型或架構時，依 Harbor 開發規範記錄 Change Request，並維持零月費限制。

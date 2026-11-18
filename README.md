@@ -2,6 +2,19 @@
 
 > A local-first Traditional Chinese Genshin Impact knowledge assistant that cites evidence or refuses unsupported answers.
 
+> [!IMPORTANT]
+> **本專案已停止開發並封存（Archived，2026-11-18）。** This project is no longer developed; the repository is kept read-only for reference.
+>
+> **封存原因：** 原訂的 local-first 小模型 10 秒延遲門檻（[#94](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/94)，實測 44–111 秒）、生成決定性（[#92](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/92)）與長證據生成品質（[#87](https://github.com/frobel0520/Genshin-Impact-RAG-Helper/issues/87)）經評估後決定不再投入調整，改為保留既有成果供日後參考。
+>
+> **已完成成果：**
+> - 固定來源抓取與索引：HoYoLAB、Fandom、genshin-db 三來源以 pinned 指標重建，14 文件／89 切塊，`dataset_version` 可重現。
+> - Grounding 守門：證據不足即拒答，未出現在證據中的名稱或矛盾元素一律退回附引用的模板，不讓編造內容出貨。
+> - 74 題評估基準：Recall@5、正確拒答率、引用率三項機器指標皆 100%；兩項人工指標未評（`not_scored`）。
+> - 離線單元測試：463 tests、語法與模組邊界檢查，全部在 offline guard 下執行（最後確認 2026-11-18）。
+>
+> 以下內容為封存時的狀態，不再更新。
+
 ## Overview
 
 A local-first Traditional Chinese knowledge assistant for Genshin Impact. It
@@ -182,7 +195,7 @@ npm run check
 
 To see how stable generation is on a warm or cold model, `node scripts/t44-generation-probe.js` repeats fixed prompts against Ollama and writes hashes, timings and raw output to `artifacts/t44-generation-probe.json` (`T44_REPEATS` sets the repeat count; limits in [`docs/10`](docs/10-generation-on-multi-section-evidence.md) §12).
 
-455 tests, syntax check and module-boundary check, all under an offline guard —
+463 tests, syntax check and module-boundary check, all under an offline guard —
 CI needs neither a model nor a live source, because both fetchers and the
 generation stage are tested with their network calls replaced by fakes.
 
